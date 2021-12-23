@@ -3,12 +3,19 @@
 
 """This is the brute force solution for the client"""
 
-
+import sys
 import csv
 import itertools
 
 # Change this value to match the client's maximum amount to invest
 AMOUNT_MAX = 500
+
+
+# Optional trace of the unwanted lots, it will take a much longer
+# execution time and a big amount of memory.
+unwanted_trace = False
+if len(sys.argv) > 1 and sys.argv[1] == "log":
+    unwanted_trace = True
 
 
 class Action:
@@ -71,16 +78,15 @@ class Lot:
 titles = []
 lots = []
 
+# Get the actions from the datas.csv file
 with open("datas.csv", "r") as f:
     datas = csv.reader(f)
     for data in datas:
         titles.append(Action(data[0], int(data[1]), int(data[2])))
 
-# for item in actions_list:
-#     titles.append(Action(item["name"], item["price"], item["renta"]))
-
 
 def get_possibilities(titles):
+    """Returns a list of all possible combinations"""
     number_of_actions = len(titles)
     all_possibilities = []
     for i in range(1, (number_of_actions+1)):
@@ -90,6 +96,7 @@ def get_possibilities(titles):
 
 
 def get_best(results):
+    """Returns the best lot possible"""
     result = ""
     best_renta = 0
     best_lot = None
@@ -107,6 +114,7 @@ def get_best(results):
 
 
 def print_lot(lot):
+    """Displays the best lot"""
     result = (
         f"La meilleure rentabilité possible pour un "
         f"investissement maximum de {AMOUNT_MAX} Euros s'obtient avec "
@@ -120,6 +128,7 @@ def print_lot(lot):
 
 
 def print_unwanted_lots(lots):
+    """Print all lots, and store the details in a file. Very long !"""
     detail = ""
     for lot in lots:
         detail += f"\n\n{lot}"
@@ -132,5 +141,6 @@ def print_unwanted_lots(lots):
 
 all_results = get_possibilities(titles)
 best_lot = get_best(all_results)
-print_unwanted_lots(lots)
+if unwanted_trace:
+    print_unwanted_lots(lots)
 print_lot(best_lot)
