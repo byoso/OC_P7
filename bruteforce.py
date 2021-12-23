@@ -19,6 +19,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "log":
 
 
 class Action:
+    """This class represents an action"""
     def __init__(self, name, price, renta):
         self.name = name
         self.price = price
@@ -38,6 +39,7 @@ class Action:
 
 
 class Lot:
+    """This class represents a lot of actions"""
     count = 0
 
     def __init__(self, *args):
