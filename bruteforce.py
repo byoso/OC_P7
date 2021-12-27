@@ -3,7 +3,6 @@
 
 """This is the brute force solution for the client"""
 
-import sys
 import csv
 import itertools
 
@@ -11,19 +10,16 @@ import itertools
 AMOUNT_MAX = 500
 
 
-# Optional trace of the unwanted lots, it will take a much longer
-# execution time and a big amount of memory.
-unwanted_trace = False
-if len(sys.argv) > 1 and sys.argv[1] == "log":
-    unwanted_trace = True
-
-
 class Action:
     """This class represents an action"""
+    count = 0
+
     def __init__(self, name, price, renta):
+        Action.count += 1
         self.name = name
         self.price = price
         self.renta = renta
+        self.id = Action.count
 
     def __str__(self):
         return (
@@ -78,7 +74,8 @@ class Lot:
 
 
 titles = []
-lots = []
+traceback = []
+
 
 # Get the actions from the datas.csv file
 with open("datas.csv", "r") as f:
@@ -93,35 +90,33 @@ def get_possibilities(titles):
     all_possibilities = []
     for i in range(1, (number_of_actions+1)):
         possibilities = list(itertools.combinations(titles, i))
-        all_possibilities.extend((possibilities))
-    return(all_possibilities)
+        all_possibilities.extend(possibilities)
+    return all_possibilities
 
 
-def get_best(results):
+def get_best(all_results):
     """Returns the best lot possible"""
-    result = ""
     best_renta = 0
     best_lot = None
-    for line in results:
+    for line in all_results:
+        line = list(line)
         lot = Lot(*line)
         if lot.total_price <= AMOUNT_MAX:
             if lot.total_renta > best_renta:
                 best_renta = lot.total_renta
                 best_lot = lot
-            lots.append(lot)
-            result += f"\n\n*{lot}"
-            for action in lot.actions:
-                result += f"\n{action}"
     return best_lot
 
 
-def print_lot(lot):
+def print_best_lot(lot):
     """Displays the best lot"""
     result = (
         f"La meilleure rentabilité possible pour un "
         f"investissement maximum de {AMOUNT_MAX} Euros s'obtient avec "
-        f"le lot suivant :\n")
-    result += f"\n{lot}"
+        f"le lot suivant :\n"
+        f"prix : {lot.total_price}, rentabilité numéraire "
+        f"de {lot.total_renta:.2f}\n"
+        )
     for action in lot.actions:
         result += f"\n{action}"
     with open("best_lot.txt", "w") as f:
@@ -129,20 +124,7 @@ def print_lot(lot):
     print(result)
 
 
-def print_unwanted_lots(lots):
-    """Print all lots, and store the details in a file. Very long !"""
-    detail = ""
-    for lot in lots:
-        detail += f"\n\n{lot}"
-        print(lot)
-        for action in lot.actions:
-            detail += f"\n{action}"
-    with open("all_lots.txt", "w") as f:
-        f.write(detail)
-
-
 all_results = get_possibilities(titles)
 best_lot = get_best(all_results)
-if unwanted_trace:
-    print_unwanted_lots(lots)
-print_lot(best_lot)
+print_best_lot(best_lot)
+
