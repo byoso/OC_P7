@@ -1,3 +1,4 @@
 __pycache__/
 all_lots.txt
 best_lot.txt
+greedy.py
