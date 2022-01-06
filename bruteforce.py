@@ -78,10 +78,20 @@ traceback = []
 
 
 # Get the actions from the datas.csv file
+def valid_data(data):
+    if len(data) != 3:
+        return False
+    if float(data[1]) <= 0 or float(data[2]) <= 0:
+        return False
+    return True
+
+
 with open("datas.csv", "r") as f:
     datas = csv.reader(f)
+    next(datas)  # skip the header
     for data in datas:
-        titles.append(Action(data[0], int(data[1]), int(data[2])))
+        if valid_data(data):
+            titles.append(Action(data[0], float(data[1]), float(data[2])))
 
 
 def get_possibilities(titles):
@@ -127,4 +137,3 @@ def print_best_lot(lot):
 all_results = get_possibilities(titles)
 best_lot = get_best(all_results)
 print_best_lot(best_lot)
-

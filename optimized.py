@@ -1,25 +1,21 @@
 #! /usr/bin/env python3
 # coding: utf-8
 
-"""This is the brute force solution for the client"""
+"""Optimized version, based on a greedy algorithme"""
+
 
 import csv
-import itertools
+
 
 # Change this value to match the client's maximum amount to invest
 AMOUNT_MAX = 500
 
 
 class Action:
-    """This class represents an action"""
-    count = 0
-
     def __init__(self, name, price, renta):
-        Action.count += 1
         self.name = name
         self.price = price
         self.renta = renta
-        self.id = Action.count
 
     def __str__(self):
         return (
@@ -35,7 +31,6 @@ class Action:
 
 
 class Lot:
-    """This class represents a lot of actions"""
     count = 0
 
     def __init__(self, *args):
@@ -74,95 +69,42 @@ class Lot:
 
 
 titles = []
-traceback = []
+lots = []
 
 
-def print_traceback():  ## debug
-    print("Traceback :")
-    for trace in traceback:
-        print(trace)
-
-
-# Get the actions from the datas.csv file
-with open("datas.csv", "r") as f:
-    datas = csv.reader(f)
-    for data in datas:
-        titles.append(Action(data[0], int(data[1]), int(data[2])))
-
-
-def get_trace(actions):
-    """returns a trace from a list of actions"""
-    trace = []
-    for action in actions:
-        trace.append(action.id)
-    return trace
-
-
-def check_trace(new_trace, traceback=traceback):
-    """Returns False if the trace already is recorded"""
-    result = True
-    for trace in traceback:
-        # print(trace)
-        result = all(elem in new_trace for elem in trace)
-        if result is False:
-            # print(result)
-            return False
-    # print(result)
+def valid_data(data):
+    if len(data) != 3:
+        return False
+    if float(data[1]) <= 0 or float(data[2]) <= 0:
+        return False
     return True
 
 
-def get_possibilities(titles):
-    """Returns a list of all possible combinations"""
-    number_of_actions = len(titles)
-    all_possibilities = []
-    for i in range(1, (number_of_actions+1)):
-        possibilities = list(itertools.combinations(titles, i))
-        all_possibilities.extend(possibilities)
-    return all_possibilities
+with open("datas.csv", "r") as f:
+    datas = csv.reader(f)
+    next(datas)  # skip the header
+    for data in datas:
+        if valid_data(data):
+            titles.append(Action(data[0], float(data[1]), float(data[2])))
+
+titles = sorted(titles, key=lambda x: x.renta_num, reverse=True)
+
+amount = 0
+bag = []
+while amount < AMOUNT_MAX:
+    if titles:
+        title = titles.pop(0)
+        if amount + title.price < AMOUNT_MAX:
+            amount += title.price
+            bag.append(title)
+    else:
+        break
 
 
-def get_best(all_results):
-    """Returns the best lot possible"""
-    # result = ""
-    best_renta = 0
-    best_lot = None
-    for line in all_results:
-        line = list(line)
-        trace = get_trace(line)
-        # print(trace)
-        if check_trace(trace) is True:
-            # print(trace)
-            lot = Lot(*line)
-            if lot.total_price <= AMOUNT_MAX:
-                if lot.total_renta > best_renta:
-                    best_renta = lot.total_renta
-                    best_lot = lot
-            else:
-                # print(trace)
-                # print(lot.total_price)
-                # traceback.append(trace)
-                pass
-    return best_lot
-
-
-def print_best_lot(lot):
-    """Displays the best lot"""
-    result = (
-        f"La meilleure rentabilité possible pour un "
-        f"investissement maximum de {AMOUNT_MAX} Euros s'obtient avec "
-        f"le lot suivant :\n"
-        f"prix : {lot.total_price}, rentabilité numéraire "
-        f"de {lot.total_renta:.2f}\n"
-        )
-    for action in lot.actions:
-        result += f"\n{action}"
-    with open("best_lot.txt", "w") as f:
-        f.write(result)
-    print(result)
-
-
-all_results = get_possibilities(titles)
-best_lot = get_best(all_results)
-print_best_lot(best_lot)
-
-print_traceback()
+print(f"\nMeilleur lot pour un investissement max de {AMOUNT_MAX}:")
+renta = 0
+for action in bag:
+    print(action)
+    renta += action.renta_num
+print(f"Prix du lot: {amount}")
+print(f"rentabilité numéraire: {renta:.2f}")
