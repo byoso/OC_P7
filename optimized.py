@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # coding: utf-8
 
-"""Actions with memoization"""
+"""Optimized algorithme with memoization"""
 
 import csv
 import sys
@@ -17,13 +17,12 @@ def valid_data(data):
 
 
 def get_best(reste, n, memo):
-    counter[0] += 1
     if (reste, n) in memo:
         return memo[(reste, n)]
     if n == 0 or reste <= 0:
         return 0, []
     if prices[n-1] > reste:
-        # the actions price is too high, let's go to the next one
+        # the action's price is too high, let's go to the next one
         return get_best(reste, n-1, memo)
 
     # 2 cases:
@@ -62,9 +61,7 @@ if __name__ == "__main__":
                 rent_absolute = int(price*float(data[2]))
                 renta.append(rent_absolute)
 
-    counter = [0]
-
-    MAX = 50000  # Max amount in cents
+    MAX = 500_00  # Max amount in cents
     memo = {}
 
     renta, lot = get_best(MAX, len(actions), memo)
@@ -79,6 +76,4 @@ if __name__ == "__main__":
     price_result = price/100
     print(f"cout total du lot: {price_result:_.2f}")
     print(f"Rentabilité numeraire du lot: {renta_result:_.2f}")
-    print("\nInfos systeme:")
-    print(f"solicitation CPU: {counter[0]:_}")
-    print(f"taille du cache utilisé: {sys.getsizeof(memo)/1_000_000:_.2f} Mo")
+    print(f"\ntaille du cache utilisé: {sys.getsizeof(memo)/1_000_000:_.2f} Mo")

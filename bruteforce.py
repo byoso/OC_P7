@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # coding: utf-8
 
-"""Actions"""
+"""Bruteforce algorithme"""
 
 import csv
 
@@ -16,11 +16,10 @@ def valid_data(data):
 
 
 def get_best(reste, n):
-    counter[0] += 1
     if n == 0 or reste <= 0:
         return 0, []
     if prices[n-1] > reste:
-        # the actions price is too high, let's go to the next one
+        # the action's price is too high, let's go to the next one
         return get_best(reste, n-1)
 
     # 2 cases:
@@ -56,13 +55,10 @@ if __name__ == "__main__":
                 rent_absolute = int(price*float(data[2]))
                 renta.append(rent_absolute)
 
-    counter = [0]
-
     MAX = 50000  # Max amount in cents
 
     renta, lot = get_best(MAX, len(actions))
     renta_result = renta/10000
-    print(f"Rentabilité numeraire du lot: {renta_result}")
     print("Composition du lot:")
     for i in lot:
         print(f"{i}")
@@ -71,5 +67,5 @@ if __name__ == "__main__":
         index = actions.index(action)
         price += prices[index]
     price_result = price/100
-    print("cout total du lot: ", price_result)
-    print("iterations effectuées: ", counter[0])
+    print(f"cout total du lot: {price_result:_.2f}")
+    print(f"Rentabilité numeraire du lot: {renta_result:_.2f}")
