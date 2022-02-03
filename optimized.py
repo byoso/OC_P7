@@ -7,8 +7,8 @@ import csv
 import sys
 
 
-# verify the actions from the datas.csv file
 def valid_data(data):
+    """verify the actions data from the datas.csv file"""
     if len(data) != 3:
         return False
     if float(data[1]) <= 0 or float(data[2]) <= 0:
@@ -17,6 +17,8 @@ def valid_data(data):
 
 
 def get_best(reste, n, memo):
+    """recursive function that returns the best result for
+    the given parameters"""
     if (reste, n) in memo:
         return memo[(reste, n)]
     if n == 0 or reste <= 0:
@@ -76,4 +78,6 @@ if __name__ == "__main__":
     price_result = price/100
     print(f"cout total du lot: {price_result:_.2f}")
     print(f"Rentabilité numeraire du lot: {renta_result:_.2f}")
-    print(f"\ntaille du cache utilisé: {sys.getsizeof(memo)/1_000_000:_.2f} Mo")
+    print(
+        f"\ntaille du cache utilisé: {sys.getsizeof(memo)/1_000_000:_.2f} Mo"
+    )

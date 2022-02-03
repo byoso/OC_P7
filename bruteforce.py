@@ -6,8 +6,8 @@
 import csv
 
 
-# verify the actions from the datas.csv file
 def valid_data(data):
+    """verify the actions data from the datas.csv file"""
     if len(data) != 3:
         return False
     if float(data[1]) <= 0 or float(data[2]) <= 0:
@@ -16,6 +16,8 @@ def valid_data(data):
 
 
 def get_best(reste, n):
+    """recursive function that returns the best result for
+    the given parameters"""
     if n == 0 or reste <= 0:
         return 0, []
     if prices[n-1] > reste:
